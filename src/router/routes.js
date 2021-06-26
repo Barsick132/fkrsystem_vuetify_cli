@@ -4,7 +4,7 @@ import Home from "../pages/Employees/Home";
 import NotFound from "../pages/NotFound";
 import AuthGuard from "../router/auth-guard"
 
-export default new VueRouter({
+export const router = new VueRouter({
     routes: [
         {
           path: '/',
@@ -12,12 +12,16 @@ export default new VueRouter({
         },
         {
             path: '/login',
-            component: Login,
+            component: Login
         },
         {
             path: '/home',
             component: Home,
-            beforeEnter: AuthGuard
+        },
+        {
+            path: '/home2',
+            component: Home,
+            meta: {acs_name: ['buh']}
         },
         {
             path: '*',
@@ -26,3 +30,5 @@ export default new VueRouter({
     ],
     mode: 'history'
 });
+
+router.beforeEach(AuthGuard);
