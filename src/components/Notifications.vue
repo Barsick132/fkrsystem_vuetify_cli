@@ -1,6 +1,6 @@
 <template>
-  <div class="v-snack v-snack--absolute v-snack--active v-snack--has-background v-snack--right v-snack--top">
-    <v-list>
+  <div class="v-snack v-snack--absolute v-snack--has-background v-snack--right v-snack--top" style="z-index: 203">
+    <v-list color="transparent">
       <v-list-item
           class="mb-1"
           v-for="noti in notifications"

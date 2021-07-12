@@ -4,7 +4,7 @@
       <v-flex class="mx-auto col-sm-8 col-md-6 col-lg-5 col-xl-4 pa-1">
         <v-img
             width="300"
-            :src="$root.images.Logo"
+            :src="$root.images.OriginalLogo"
             class="mx-auto mb-2"
         ></v-img>
         <v-card>

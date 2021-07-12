@@ -9,7 +9,7 @@ export default {
     }),
     mutations: {
         setAccesses(state, res) {
-            if (res.payload) {
+            if (res.status === "OK" && res.payload) {
                 state.accesses = res.payload.accesses;
             }
             else {
@@ -60,7 +60,7 @@ export default {
                     commit('setProgress', downloadProgress, {root: true})
                 },
                 validateStatus: function (status) {
-                    return status === 400 || status === 200; // Resolve only if the status code is less than 500
+                    return status === 400 || status === 200; // Resolve only if the status code is 400 or 200
                 }
             })
                 .then(async (res) => {

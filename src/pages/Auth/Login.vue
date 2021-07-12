@@ -10,7 +10,7 @@
               @submit.prevent="submit">
         <v-img
             width="300"
-            :src="$root.images.Logo"
+            :src="$root.images.OriginalLogo"
             class="mx-auto mb-2"
         ></v-img>
         <v-card>

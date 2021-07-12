@@ -1,4 +1,6 @@
 window.ErrorsMes = {
+    FILE_NOT_EXISTS: 'Файл не существует',
+
     VALIDATION_ERROR: 'Ошибка валидации',
     INCORRECT_PASSWORD: 'Не верный пароль',
     LOGIN_MUST_BE_UNIQUE: 'Логин должен быть уникальным',
