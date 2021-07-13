@@ -52,7 +52,7 @@
                 color="primary"
                 :disabled="!valid || loading"
                 :loading="loading"
-            >Sign In
+            >Войти
             </v-btn>
           </v-card-actions>
         </v-card>

@@ -18,6 +18,8 @@
         app
     >
       <v-list dense>
+        <v-subheader>МЕНЮ</v-subheader>
+
         <v-list-item v-for="item in menuItems" :key="item.id" :to="item.to">
           <!--          <v-list-item-icon>-->
           <!--            <v-icon>mdi-home</v-icon>-->

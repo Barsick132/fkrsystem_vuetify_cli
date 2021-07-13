@@ -30,7 +30,7 @@ export default {
     },
     actions: {
         requestDownloadFile({commit}, file) {
-            Vue.axios.get(process.env.VUE_APP_SERVER_URL + 'api/get/' + file.file_id + '/ltp', null, {
+            Vue.axios.get(process.env.VUE_APP_SERVER_URL + 'api/get/' + file.file_id + '/ltp', {
                 responseType: 'blob', // important
             })
                 .then(res => {
