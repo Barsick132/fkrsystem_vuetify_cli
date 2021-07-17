@@ -9,7 +9,7 @@ import VueAxios from "vue-axios";
 import VueCookie from "vue-cookie"
 import images from "./images"
 
-import {filterBeautifulDtLocalFromISO, filterDtLocalFromISO} from '@/store/_helpers/date_helpers'
+import {filterBeautifulDtLocalFromISO, filterDtLocalFromISO, filterMoney} from '@/store/_helpers/date_helpers'
 
 import Notifications from "@/components/Notifications";
 import AppBarNavLogo from "@/components/AppBarNavLogo";
@@ -29,6 +29,7 @@ Vue.config.productionTip = false
 Vue.component('Notifications', Notifications);
 Vue.component('AppBarNavLogo', AppBarNavLogo);
 
+Vue.filter('filterMoney', filterMoney);
 Vue.filter('filterDtLocalFromISO', filterDtLocalFromISO);
 Vue.filter('filterBeautifulDtLocalFromISO', filterBeautifulDtLocalFromISO);
 

@@ -18,7 +18,7 @@
               <v-avatar color="red" class="mr-2" size="40">
                 <span class="white--text headline">К</span>
               </v-avatar>
-              <span>{{ getUser.employee.emp_short_name }}</span>
+              <span>{{ getUser ? getUser.employee.emp_short_name : '...' }}</span>
             </v-btn>
           </template>
           <v-list dense>
@@ -53,11 +53,11 @@
           <!--            <img src="https://cdn.vuetifyjs.com/images/john.jpg">-->
           <!--          </v-list-item-avatar>-->
           <v-avatar color="red" class="mr-2" size="40">
-            <span class="white--text headline">{{ getUser.employee.emp_short_name.substr(0, 1) }}</span>
+            <span class="white--text headline">{{ getUser ? getUser.employee.emp_short_name.substr(0, 1) : '...' }}</span>
           </v-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>{{ getUser.employee.emp_short_name }}</v-list-item-title>
+            <v-list-item-title>{{ getUser ? getUser.employee.emp_short_name : '...' }}</v-list-item-title>
             <v-list-item-subtitle>Онлайн</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>

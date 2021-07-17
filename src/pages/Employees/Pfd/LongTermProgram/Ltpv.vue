@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-navigation-drawer
-        v-model="filter"
+        v-model="showFilter"
         app clipped right
     >
       <v-card flat tile>
@@ -20,10 +20,14 @@
       </v-card>
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main ref="main">
       <Notifications></Notifications>
 
-      <v-app-bar dense>
+      <v-app-bar ref="toolbar"
+                 absolute
+                 elevate-on-scroll
+                 scroll-target="#scrolling-techniques-7"
+                 dense>
         <v-toolbar-items>
           <v-btn icon @click="$router.push('/pfd/ltp')">
             <v-icon>mdi-arrow-left</v-icon>
@@ -31,7 +35,7 @@
         </v-toolbar-items>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn icon @click="filter = !filter">
+          <v-btn icon @click="showFilter = !showFilter">
             <v-icon>mdi-filter</v-icon>
           </v-btn>
 
@@ -58,191 +62,299 @@
         </v-toolbar-items>
       </v-app-bar>
 
-      <v-container fluid>
+      <v-container v-if="loading" :style="{height: heightScrollArea + 'px'}" fluid>
+        <v-row
+            class="fill-height"
+            align-content="center"
+            justify="center"
+        >
+          <v-col
+              class="text-subtitle-1 text-center"
+              cols="12"
+          >
+            Загрузка... Пожалуйста, подождите
+          </v-col>
+          <v-col cols="6">
+            <v-progress-linear
+                v-model="progress"
+                color="primary"
+                height="10"
+                value="10"
+                striped
+            ></v-progress-linear>
+          </v-col>
+        </v-row>
+      </v-container>
 
-        <v-simple-table dense>
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th v-for="(header, i) in headers" :key="i">{{ header.text }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template v-for="item in items">
-              <template v-for="(period, period_key) in item.periods_arr">
-                <template v-if="!period.opened">
-                  <tr :key="period_key">
-                    <td v-if="period_key===0" :rowspan="getColspan(item)">{{ item.mkdstate_id }}</td>
-                    <td v-if="period_key===0" :rowspan="getColspan(item)">{{ item.mkd_code }}</td>
-                    <td v-if="period_key===0" :rowspan="getColspan(item)">{{ item.mun_name }}</td>
-                    <td v-if="period_key===0" :rowspan="getColspan(item)">
-                      <router-link :to="'/mkd/' + item.mkdstate_id">{{ item.mkd_address }}</router-link>
-                    </td>
-                    <td>{{ period.plan_period }}</td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ period.improgs.map(improg => improg.wk_abbreviations).join(', ') }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">&nbsp;</td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ period.improgs[0].improg_date_include_stp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ period.improgs[0].improg_date_exclude_stp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ period.improgs[0].improg_date_include_ltp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ period.improgs[0].improg_date_exclude_ltp }}
-                    </td>
-                    <td>{{ period.improg_planed_amount }}</td>
-                    <td>{{ period.improg_contract_amount }}</td>
-                    <td>{{ period.improg_acts_amount }}</td>
-                  </tr>
+      <v-sheet
+          v-else
+          id="scrolling-techniques-7"
+          class="overflow-y-auto pt-12"
+          :max-height="heightScrollArea + 'px'"
+      >
+        <v-container fluid>
+          <v-simple-table dense>
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <template v-for="(header, key) in headers">
+                  <th v-if="key !== 'year'|| hasOpenedStp" :style="{minWidth: header.minWidth}" :key="key">{{
+                      header.text
+                    }}
+                  </th>
                 </template>
-                <template v-else v-for="(improg, improg_key) in period.improgs">
-                  <tr :key="improg_key">
-                    <td v-if="improg_key===0 && period_key===0" :rowspan="getColspan(item)">{{ item.mkdstate_id }}</td>
-                    <td v-if="improg_key===0 && period_key===0" :rowspan="getColspan(item)">{{ item.mkd_code }}</td>
-                    <td v-if="improg_key===0 && period_key===0" :rowspan="getColspan(item)">{{ item.mun_name }}</td>
-                    <td v-if="improg_key===0 && period_key===0" :rowspan="getColspan(item)">
-                      <router-link :to="'/mkd/' + item.mkdstate_id">{{ item.mkd_address }}</router-link>
-                    </td>
-                    <td v-if="improg_key===0" :rowspan="period.improgs.length">{{ period.plan_period }}</td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.wk_abbreviations }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.improg_year }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.improg_date_include_stp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.improg_date_exclude_stp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.improg_date_include_ltp }}
-                    </td>
-                    <td class="light-blue lighten-4 v-chip--clickable" @click="period.opened = !period.opened">
-                      {{ improg.improg_date_exclude_ltp }}
-                    </td>
-                    <td v-if="improg_key===0" :rowspan="period.improgs.length">{{ period.improg_planed_amount }}</td>
-                    <td v-if="improg_key===0" :rowspan="period.improgs.length">{{ period.improg_contract_amount }}</td>
-                    <td v-if="improg_key===0" :rowspan="period.improgs.length">{{ period.improg_acts_amount }}</td>
-                  </tr>
+              </tr>
+              </thead>
+<!--              <thead v-if="loading">-->
+<!--              <tr class="v-data-table__progress">-->
+<!--                <th :colspan="Object.keys(headers).length" class="column">-->
+<!--                  <v-progress-linear-->
+<!--                      v-model="progress"-->
+<!--                      absolute-->
+<!--                      left-->
+<!--                  ></v-progress-linear>-->
+<!--                </th>-->
+<!--              </tr>-->
+<!--              </thead>-->
+              <tbody>
+<!--              <tr v-if="loading" class="v-data-table__empty-wrapper">-->
+<!--                <td :colspan="Object.keys(headers).length">Загрузка... Пожалуйста, подождите</td>-->
+<!--              </tr>-->
+              <tr v-if="!getMkds || !getMkds.mkd_arr || getMkds.mkd_arr.length===0"
+                  class="v-data-table__empty-wrapper">
+                <td :colspan="Object.keys(headers).length">Нет данных</td>
+              </tr>
+              <template v-else v-for="mkd in getMkds.mkd_arr">
+                <template v-for="(stp, stp_key) in mkd.stp_arr">
+                  <template v-if="!stp.opened">
+                    <tr :key="'mkd' + mkd.mkdstate_id + 'stpv' + stp.stpv_id + 'i'">
+                      <!--                    <td v-if="stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mkdstate_id }}</td>-->
+                      <td v-if="stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mkd_code }}</td>
+                      <td v-if="stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mun_name }}</td>
+                      <td v-if="stp_key===0" :rowspan="getColspan(mkd)">
+                        <router-link :to="'/mkd/' + mkd.mkdstate_id">{{ mkd.mkd_address }}</router-link>
+                      </td>
+                      <td>{{ stp.stp_year_start + ' - ' + stp.stp_year_end }}</td>
+                      <td class="v-chip--clickable"
+                          @click="stp.opened = !stp.opened">
+                        {{ stp.wk_arr.map(improg => improg.wk_abbreviation).join(', ') }}
+                      </td>
+                      <td v-if="hasOpenedStp" class="v-chip--clickable" @click="stp.opened = !stp.opened">&nbsp;</td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ stp.wk_arr[0].improg_date_include_stp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ stp.wk_arr[0].improg_date_exclusion_stp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ stp.wk_arr[0].improg_date_include_ltp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ stp.wk_arr[0].improg_date_exclusion_ltp | filterDtLocalFromISO }}
+                      </td>
+                      <td :style="{textAlign: headers['ohcost_amount_planed'].textAlign}">
+                        {{ stp.ohcost_amount_planed | filterMoney }}
+                      </td>
+                      <td :style="{textAlign: headers['ohcost_amount_contract'].textAlign}">
+                        {{ stp.ohcost_amount_contract | filterMoney }}
+                      </td>
+                      <td :style="{textAlign: headers['ohcost_amount_acts'].textAlign}">
+                        {{ stp.ohcost_amount_acts | filterMoney }}
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-else v-for="(improg, improg_key) in stp.wk_arr">
+                    <tr :key="'mkd' + mkd.mkdstate_id + 'stpv' + stp.stpv_id + 'i' + improg_key">
+                      <!--                    <td v-if="improg_key===0 && stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mkdstate_id }}</td>-->
+                      <td v-if="improg_key===0 && stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mkd_code }}</td>
+                      <td v-if="improg_key===0 && stp_key===0" :rowspan="getColspan(mkd)">{{ mkd.mun_name }}</td>
+                      <td v-if="improg_key===0 && stp_key===0" :rowspan="getColspan(mkd)">
+                        <router-link :to="'/mkd/' + mkd.mkdstate_id">{{ mkd.mkd_address }}</router-link>
+                      </td>
+                      <td v-if="improg_key===0" :rowspan="stp.wk_arr.length">
+                        {{ stp.stp_year_start + ' - ' + stp.stp_year_end }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.wk_abbreviation }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.improg_year }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.improg_date_include_stp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.improg_date_exclusion_stp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.improg_date_include_ltp | filterDtLocalFromISO }}
+                      </td>
+                      <td class="v-chip--clickable" @click="stp.opened = !stp.opened">
+                        {{ improg.improg_date_exclusion_ltp | filterDtLocalFromISO }}
+                      </td>
+                      <td v-if="improg_key===0"
+                          :style="{textAlign: headers['ohcost_amount_planed'].textAlign}"
+                          :rowspan="stp.wk_arr.length">{{
+                          stp.ohcost_amount_planed | filterMoney
+                        }}
+                      </td>
+                      <td v-if="improg_key===0"
+                          :style="{textAlign: headers['ohcost_amount_contract'].textAlign}"
+                          :rowspan="stp.wk_arr.length">{{
+                          stp.ohcost_amount_contract | filterMoney
+                        }}
+                      </td>
+                      <td v-if="improg_key===0"
+                          :style="{textAlign: headers['ohcost_amount_acts'].textAlign}"
+                          :rowspan="stp.wk_arr.length">{{
+                          stp.ohcost_amount_acts | filterMoney
+                        }}
+                      </td>
+                    </tr>
+                  </template>
                 </template>
               </template>
+              </tbody>
             </template>
-            </tbody>
-          </template>
-        </v-simple-table>
-
-      </v-container>
+          </v-simple-table>
+        </v-container>
+      </v-sheet>
     </v-main>
+
+    <v-footer v-if="getMkds" ref="footer" app>
+      <v-pagination
+          v-model="page"
+          :length="Math.ceil(getMkds.count_el / step)"
+          total-visible="10"
+          @input="inputPage"
+      ></v-pagination>
+    </v-footer>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
+import {mapActions, mapGetters} from 'vuex'
 
-    return {
-      filter: true,
-      headers: [
-        {text: '#'},
-        {text: 'Код дома'},
-        {text: 'ОМС'},
-        {text: 'Адрес'},
-        {text: 'Плановые периоды'},
-        {text: 'Виды работы'},
-        {text: 'Год'},
-        {text: 'Дата вкл. в КП'},
-        {text: 'Дата искл. из КП'},
-        {text: 'Дата вкл. в ДП'},
-        {text: 'Дата искл. из ДП'},
-        {text: 'Затраты плановые'},
-        {text: 'Затраты по договору'},
-        {text: 'Затраты по актам'},
-      ],
-      items: [
-        {
-          mkdstate_id: 1,
-          mkd_code: 23456,
-          mun_name: 'Липецкий район',
-          mkd_address: 'Липецк, ул. Ангарская, 23А',
-          periods_arr: [
-            {
-              opened: false,
-              plan_period: '2017-2019',
-              improg_planed_amount: 2143455,
-              improg_contract_amount: 2143455,
-              improg_acts_amount: 2143455,
-              improgs: [
-                {
-                  wk_abbreviations: 'Фундамент',
-                  improg_year: 2017,
-                  improg_date_include_stp: '26.11.2020',
-                  improg_date_exclude_stp: '26.11.2020',
-                  improg_date_include_ltp: '26.11.2020',
-                  improg_date_exclude_ltp: '26.11.2020',
-                },
-                {
-                  wk_abbreviations: 'Подвал',
-                  improg_year: 2017,
-                  improg_date_include_stp: '26.11.2020',
-                  improg_date_exclude_stp: '26.11.2020',
-                  improg_date_include_ltp: '26.11.2020',
-                  improg_date_exclude_ltp: '26.11.2020',
-                }
-              ],
-            },
-            {
-              opened: false,
-              plan_period: '2020-2022',
-              improg_planed_amount: 2143455,
-              improg_contract_amount: 2143455,
-              improg_acts_amount: 2143455,
-              improgs: [
-                {
-                  wk_abbreviations: 'Крыша',
-                  improg_year: 2020,
-                  improg_date_include_stp: '26.11.2020',
-                  improg_date_exclude_stp: '26.11.2020',
-                  improg_date_include_ltp: '26.11.2020',
-                  improg_date_exclude_ltp: '26.11.2020',
-                },
-                {
-                  wk_abbreviations: 'Фасад',
-                  improg_year: 2020,
-                  improg_date_include_stp: '26.11.2020',
-                  improg_date_exclude_stp: '26.11.2020',
-                  improg_date_include_ltp: '26.11.2020',
-                  improg_date_exclude_ltp: '26.11.2020',
-                }
-              ],
-            }],
-        }
-      ]
+export default {
+  mounted() {
+    this.requestGetMkdInLtpV(this.getRequestBody);
+
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    })
+  },
+
+
+  watch: {
+    getMkds(value) {
+      if (value) {
+        this.onResize();
+      }
     }
   },
 
 
+  data() {
+
+    return {
+      step: 100,
+      offset: 0,
+      filters: [],
+      showFilter: true,
+      headers: {
+        // id: {text: '#'},
+        mkd_code: {text: 'Код дома'},
+        mun_name: {text: 'ОМС'},
+        mkd_address: {text: 'Адрес'},
+        stp_period: {text: 'Плановые периоды', minWidth: '9em'},
+        wk: {text: 'Виды работы', minWidth: '40em'},
+        year: {text: 'Год'},
+        date_include_stp: {text: 'Дата вкл. в КП', minWidth: '9em'},
+        date_exclusion_stp: {text: 'Дата искл. из КП', minWidth: '9em'},
+        date_include_ltp: {text: 'Дата вкл. в ДП', minWidth: '9em'},
+        date_exclusion_ltp: {text: 'Дата искл. из ДП', minWidth: '9em'},
+        ohcost_amount_planed: {text: 'Затраты плановые', textAlign: 'right'},
+        ohcost_amount_contract: {text: 'Затраты по договору', textAlign: 'right'},
+        ohcost_amount_acts: {text: 'Затраты по актам', textAlign: 'right'},
+      },
+      heightScrollArea: 810,
+      innerHeight: window.innerHeight
+    }
+  },
+
+
+  computed: {
+    ...mapGetters('Ltpv', ['getMkds']),
+    ...mapGetters(['loading', 'progress']),
+
+    ltpv_id() {
+      return parseInt(this.$route.params.id);
+    },
+
+    hasOpenedStp() {
+      if (!this.getMkds)
+        return false;
+
+      return this.getMkds.mkd_arr.some(mkd => {
+        return mkd.stp_arr.some(stp => stp.opened);
+      })
+    },
+
+    page: {
+      get() {
+        return this.offset / this.step + 1;
+      },
+      set(page) {
+        this.offset = this.step * (page - 1);
+      }
+    },
+
+    getRequestBody() {
+      return {
+        ltpv_id: this.ltpv_id,
+        step: this.step,
+        offset: this.offset,
+        filters: this.filters,
+      }
+    },
+  },
+
+
   methods: {
+    ...mapActions('Ltpv', ['requestGetMkdInLtpV']),
+
+    onResize() {
+      this.innerHeight = window.innerHeight;
+
+      setTimeout(() => {
+        this.heightScrollArea = this.innerHeight;
+        this.heightScrollArea -= (this.$vuetify.application.top + this.$vuetify.application.footer);
+      }, 0)
+    },
+
+    inputPage() {
+      this.requestGetMkdInLtpV(this.getRequestBody);
+    },
+
     getColspan(item) {
-      var openedPeriod = item.periods_arr.filter(period => period.opened);
-      if (openedPeriod.length === 0) {
-        return item.periods_arr.length
+      var openedStp = item.stp_arr.filter(stp => stp.opened);
+      if (openedStp.length === 0) {
+        return item.stp_arr.length
       }
 
       var colspan = 0;
-      openedPeriod.forEach(period => {
-        colspan += period.improgs.length;
+      openedStp.forEach(stp => {
+        colspan += stp.wk_arr.length;
       });
-      colspan += item.periods_arr.length - openedPeriod.length;
+      colspan += item.stp_arr.length - openedStp.length;
       return colspan;
     }
-  }
+  },
+
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
+  },
 }
 </script>
 
