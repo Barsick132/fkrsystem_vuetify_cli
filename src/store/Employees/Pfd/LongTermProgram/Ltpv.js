@@ -42,21 +42,12 @@ export default {
             commit('setProgress', 0, {root: true})
             commit('setMkds', null);
 
-            console.log('ltpv_id: ', body.ltpv_id);
-            console.log('step: ', body.step);
-            console.log('offset: ', body.offset);
-            console.log('filters: ', body.filters);
             Vue.axios.post(process.env.VUE_APP_SERVER_URL + 'api/pfd/long/getMkdInLtpV', body, {
                 onUploadProgress: ({loaded, total}) => {
-                    const uploadProgress = Math.round(loaded / total * 50)
+                    const uploadProgress = Math.round(loaded / total * 100)
 
                     commit('setProgress', uploadProgress, {root: true})
                 },
-                onDownloadProgress: ({loaded, total}) => {
-                    const downloadProgress = Math.round(50 + loaded / total * 50)
-
-                    commit('setProgress', downloadProgress, {root: true})
-                }
             })
                 .then(res => {
                     res = res.data;
@@ -102,7 +93,6 @@ export default {
     },
     getters: {
         getMkds(state) {
-            console.log(state.mkds);
             return state.mkds;
         },
         getStpArr(state) {

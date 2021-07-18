@@ -23,8 +23,6 @@
                 @change="changeMkdCode"
             ></v-text-field>
 
-            <v-subheader>Адрес</v-subheader>
-
             <v-autocomplete
                 v-model="filters.settlement_id"
                 :loading="getSettlements.loading"
@@ -39,6 +37,7 @@
                 hide-selected
                 clearable
                 dense
+                @focus.once="requestGetAllSettlementsWithFull"
                 @change="changeSettlement"
             ></v-autocomplete>
             <v-autocomplete
@@ -66,7 +65,7 @@
                 clearable
                 dense
                 :disabled="!filters.street_id && filters.street_id !== 0"
-                @change="changeMkdHome"
+                @change="delFilterString('mkd_home')"
             ></v-text-field>
 
 
@@ -86,7 +85,8 @@
                 dense
                 small-chips
                 outlined
-                @change="changeMunicipalities"
+                @focus.once="requestGetMunicipalities"
+                @change="delFilterArr('mun_id_arr')"
             ></v-autocomplete>
 
             <v-autocomplete
@@ -105,7 +105,8 @@
                 dense
                 small-chips
                 outlined
-                @change="changeStpArr"
+                @focus.once="requestGetStpByLtpvId(ltpv_id)"
+                @change="delFilterArr('stp_id_arr')"
             ></v-autocomplete>
 
             <v-autocomplete
@@ -124,7 +125,8 @@
                 dense
                 small-chips
                 outlined
-                @change="changeWkArr"
+                @focus.once="requestGetWkArr"
+                @change="delFilterArr('wk_id_arr')"
             ></v-autocomplete>
 
             <v-autocomplete
@@ -143,7 +145,8 @@
                 dense
                 small-chips
                 outlined
-                @change="changeMkdTypeArr"
+                @focus.once="requestGetMkdType"
+                @change="delFilterArr('mkd_type_id_arr')"
             ></v-autocomplete>
 
             <v-autocomplete
@@ -162,78 +165,96 @@
                 dense
                 small-chips
                 outlined
-                @change="changeMasArr"
+                @focus.once="requestGetMkdAdditionalStatus"
+                @change="delFilterArr('mas_id_arr')"
             ></v-autocomplete>
 
-            <v-radio-group v-model="mkd_included_stp"
-                           row dense
-                           class="mt-0"
-                           @change="changeMkdIncludedStp">
-              <template v-slot:label>
-                <div><strong>Включены</strong> в краткосрочный план</div>
-              </template>
-              <v-radio :value="1">
-                <template v-slot:label>
-                  <div><strong class="success--text">Да</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="0">
-                <template v-slot:label>
-                  <div><strong class="error--text">Нет</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="2">
-                <template v-slot:label>
-                  <div>Не важно</div>
-                </template>
-              </v-radio>
-            </v-radio-group>
-            <v-radio-group v-model="mkd_excluded_stp"
-                           row dense
-                           class="mt-0"
-                           @change="changeMkdExcludedStp">
-              <template v-slot:label>
-                <div><strong>Исключены</strong> из краткосрочного плана</div>
-              </template>
-              <v-radio :value="1">
-                <template v-slot:label>
-                  <div><strong class="success--text">Да</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="0">
-                <template v-slot:label>
-                  <div><strong class="error--text">Нет</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="2">
-                <template v-slot:label>
-                  <div>Не важно</div>
-                </template>
-              </v-radio>
-            </v-radio-group>
-            <v-radio-group v-model="mkd_excluded_ltp"
-                           row dense
-                           class="mt-0"
-                           @change="changeMkdExcludedLtp">
-              <template v-slot:label>
-                <div><strong>Исключены</strong> из краткосрочного плана</div>
-              </template>
-              <v-radio :value="1">
-                <template v-slot:label>
-                  <div><strong class="success--text">Да</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="0">
-                <template v-slot:label>
-                  <div><strong class="error--text">Нет</strong></div>
-                </template>
-              </v-radio>
-              <v-radio :value="2">
-                <template v-slot:label>
-                  <div>Не важно</div>
-                </template>
-              </v-radio>
-            </v-radio-group>
+            <v-select
+                v-model="mkd_included_stp"
+                :items="selectItems"
+                label="Включены в КП"
+                dense
+            ></v-select>
+            <v-select
+                v-model="mkd_excluded_stp"
+                :items="selectItems"
+                label="Исключены из КП"
+                dense
+            ></v-select>
+            <v-select
+                v-model="mkd_excluded_ltp"
+                :items="selectItems"
+                label="Исключены из ДП"
+                dense
+            ></v-select>
+
+
+            <v-select
+                v-model="mkd_basement"
+                :items="selectItems2"
+                label="Подвал"
+                dense
+            ></v-select>
+            <v-select
+                v-model="mkd_roof"
+                :items="selectItems2"
+                label="Крыша"
+                dense
+            ></v-select>
+            <v-select
+                v-model="mkd_lift"
+                :items="selectItems2"
+                label="Лифт"
+                dense
+            ></v-select>
+
+            <v-container fluid>
+              <v-layout row>
+                <v-text-field
+                    v-model.number="filters.mkd_floors_start"
+                    type="number"
+                    min="0" max="50"
+                    label="Этажность от"
+                    placeholder="0"
+                    dense
+                    @change="delFilterString('mkd_floors_start')"
+                ></v-text-field>
+                <v-text-field
+                    v-model.number="filters.mkd_floors_end"
+                    type="number"
+                    min="0" max="50"
+                    label="до"
+                    placeholder="11"
+                    prefix="−"
+                    dense
+                    @change="delFilterString('mkd_floors_end')"
+                ></v-text-field>
+              </v-layout>
+            </v-container>
+
+            <v-container fluid>
+              <v-layout row>
+                <v-text-field
+                    v-model.number="filters.mkd_wear_start"
+                    type="number"
+                    step="0.01" min="0" max="100"
+                    label="Износ от"
+                    placeholder="0"
+                    dense
+                    @change="delFilterString('mkd_wear_start')"
+                ></v-text-field>
+                <v-text-field
+                    v-model.number="filters.mkd_wear_end"
+                    type="number"
+                    step="0.01" min="0" max="100"
+                    label="до"
+                    placeholder="100"
+                    prefix="−"
+                    dense
+                    @change="delFilterString('mkd_wear_end')"
+                ></v-text-field>
+              </v-layout>
+            </v-container>
 
           </v-card-text>
         </form>
@@ -453,15 +474,30 @@ import {mapActions, mapGetters} from 'vuex'
 
 export default {
   mounted() {
+    let sessionFilters = JSON.parse(sessionStorage.getItem('Ltpv_filters'));
+    if (sessionFilters) {
+
+      const convertSelectProps = [
+        'mkd_included_stp', 'mkd_excluded_stp', 'mkd_excluded_ltp',
+        'mkd_basement', 'mkd_roof', 'mkd_lift'
+      ];
+
+      convertSelectProps.forEach(prop => {
+        if (sessionFilters[prop] === true) {
+          this.$data[prop] = 1;
+        } else if (sessionFilters[prop] === false) {
+          this.$data[prop] = 0;
+        } else {
+          this.$data[prop] = 2;
+        }
+      });
+
+      this.filters = sessionFilters;
+    }
+
     // Выполняем запрос МКД в редакции долгосрочной программы и
     // другие запросы получения справочников для фильтрации
     this.requestGetMkdInLtpV(this.getRequestBody);
-    this.requestGetAllSettlementsWithFull();
-    this.requestGetMunicipalities();
-    this.requestGetStpByLtpvId(this.ltpv_id);
-    this.requestGetWkArr();
-    this.requestGetMkdType();
-    this.requestGetMkdAdditionalStatus();
 
     // Создаем слушатель события изменения размеров окна
     this.$nextTick(() => {
@@ -491,6 +527,20 @@ export default {
       mkd_included_stp: 2,
       mkd_excluded_stp: 2,
       mkd_excluded_ltp: 2,
+      mkd_basement: 2,
+      mkd_roof: 2,
+      mkd_lift: 2,
+
+      selectItems: [
+        {value: 1, text: 'Да'},
+        {value: 0, text: 'Нет'},
+        {value: 2, text: 'Не важно'},
+      ],
+      selectItems2: [
+        {value: 1, text: 'Есть'},
+        {value: 0, text: 'Нет'},
+        {value: 2, text: 'Не важно'},
+      ],
 
       showFilter: true,
       headers: {
@@ -576,15 +626,38 @@ export default {
     submit() {
       this.step = 100;
       this.offset = 0;
+
+      const convertSelectProps = [
+        'mkd_included_stp', 'mkd_excluded_stp', 'mkd_excluded_ltp',
+        'mkd_basement', 'mkd_roof', 'mkd_lift'
+      ];
+
+      convertSelectProps.forEach(prop => {
+        if (this.$data[prop] === 1) {
+          this.filters[prop] = true;
+        } else if (this.$data[prop] === 0) {
+          this.filters[prop] = false;
+        } else {
+          delete this.filters[prop];
+        }
+      })
+
+      sessionStorage.removeItem('Ltpv_filters');
+      sessionStorage.setItem('Ltpv_filters', JSON.stringify(this.filters));
+
       this.requestGetMkdInLtpV(this.getRequestBody);
     },
-
     reset() {
       this.filters = {};
+
+      sessionStorage.removeItem('Ltpv_filters');
 
       this.mkd_included_stp = 2;
       this.mkd_excluded_stp = 2;
       this.mkd_excluded_ltp = 2;
+      this.mkd_basement = 2;
+      this.mkd_roof = 2;
+      this.mkd_lift = 2;
 
       this.submit();
     },
@@ -616,65 +689,13 @@ export default {
         delete this.filters.mkd_home;
       }
     },
-    changeMkdHome() {
-      if (!this.filters.mkd_home)
-        delete this.filters.mkd_home;
+    delFilterArr(name) {
+      if (!this.filters[name].length)
+        delete this.filters[name];
     },
-    changeMunicipalities() {
-      if (!this.filters.mun_id_arr.length)
-        delete this.filters.mun_id_arr;
-    },
-    changeStpArr() {
-      if (!this.filters.stp_id_arr.length)
-        delete this.filters.stp_id_arr;
-    },
-    changeWkArr() {
-      if (!this.filters.wk_id_arr.length)
-        delete this.filters.wk_id_arr;
-    },
-    changeMkdTypeArr() {
-      if (!this.filters.mkd_type_id_arr.length)
-        delete this.filters.mkd_type_id_arr;
-    },
-    changeMasArr() {
-      if (!this.filters.mas_id_arr.length)
-        delete this.filters.mas_id_arr;
-    },
-    changeMkdIncludedStp(item) {
-      switch (item) {
-        case 0:
-          this.filters.mkd_included_stp = false;
-          return;
-        case 1:
-          this.filters.mkd_included_stp = true;
-          return;
-        default:
-          delete this.filters.mkd_included_stp;
-      }
-    },
-    changeMkdExcludedStp(item) {
-      switch (item) {
-        case 0:
-          this.filters.mkd_excluded_stp = false;
-          return;
-        case 1:
-          this.filters.mkd_excluded_stp = true;
-          return;
-        default:
-          delete this.filters.mkd_excluded_stp;
-      }
-    },
-    changeMkdExcludedLtp(item) {
-      switch (item) {
-        case 0:
-          this.filters.mkd_excluded_ltp = false;
-          return;
-        case 1:
-          this.filters.mkd_excluded_ltp = true;
-          return;
-        default:
-          delete this.filters.mkd_excluded_ltp;
-      }
+    delFilterString(name) {
+      if (!this.filters[name] && this.filters[name] !== 0)
+        delete this.filters[name];
     },
 
 
@@ -711,7 +732,7 @@ export default {
         // this.heightScrollArea = heightScrollArea;
 
         this.heightScrollArea = this.innerHeight;
-        this.heightScrollArea -= (this.$refs.toolbar.$el.clientHeight + this.$refs.footer.$el.clientHeight + this.$vuetify.application.top);
+        this.heightScrollArea -= (this.$refs.toolbar.$el.clientHeight + (this.$refs.footer ? this.$refs.footer.$el.clientHeight : this.$vuetify.application.footer) + this.$vuetify.application.top);
       });
     },
 

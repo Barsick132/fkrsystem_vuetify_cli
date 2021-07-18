@@ -6,7 +6,7 @@
 
 <script>
 import Vue from "vue";
-import {mapActions} from "vuex"
+import {mapMutations} from "vuex"
 
 export default {
   created() {
@@ -15,7 +15,7 @@ export default {
       console.log('Сработал интерсептор response', err);
 
       if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.requestRefreshToken();
+          this.logout();
       }
 
       return Promise.reject(err);
@@ -24,7 +24,7 @@ export default {
 
 
   methods: {
-    ...mapActions('login', ['requestRefreshToken'])
+    ...mapMutations('login', ['logout'])
   }
 }
 </script>
