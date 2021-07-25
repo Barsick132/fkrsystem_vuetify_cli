@@ -44,8 +44,8 @@
               <router-link :to="'/pfd/ltp/v' + ltpv.ltpv_id">{{ ltpv.ltpv_name }}</router-link>
             </td>
             <td>{{ ltpv.count_mkd }}
-              <a class="success--text">(+{{ ltpv.count_mkd_add }})</a>
-              <a class="error--text">(-{{ ltpv.count_mkd_del }})</a>
+              <router-link class="success--text" :to="{name: 'counterMkd', params: {id: ltpv.ltpv_id, flag: 'ADD'}}">(+{{ ltpv.count_mkd_add }})</router-link>
+              <router-link class="error--text" :to="{name: 'counterMkd', params: {id: ltpv.ltpv_id, flag: 'EXC'}}">(-{{ ltpv.count_mkd_del }})</router-link>
             </td>
             <td>{{ ltpv.ltpv_period }}</td>
             <td width="750px">

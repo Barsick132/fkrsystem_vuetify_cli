@@ -13,7 +13,7 @@ export default {
         },
         setError(state, payload) {
             console.error(payload);
-            if (window.ErrorsMes[payload.status])
+            if (payload.status && window.ErrorsMes[payload.status])
                 this.commit('setNotification', {value: window.ErrorsMes[payload.status], color: 'error'}, {root: true});
             else
                 this.commit('setNotification', {value: window.ErrorsMes.UNKNOWN_ERROR, color: 'error'}, {root: true});

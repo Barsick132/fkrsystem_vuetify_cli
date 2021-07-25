@@ -1,25 +1,33 @@
 <template>
   <v-dialog
       v-model="getMeta.dialog"
-      persistent
       max-width="600px"
+      @click:outside="close"
   >
     <v-card>
       <v-card-title>
         <span class="headline">Изменение редакции</span>
       </v-card-title>
 
-      <div v-if="getMeta.loading" class="text-center">
-        <v-progress-circular
-            v-model="getMeta.progress"
-            :size="50"
-            color="primary"
-            indeterminate
-        ></v-progress-circular>
-      </div>
+      <v-progress-linear
+          v-if="getMeta.loading"
+          v-model="getMeta.progress"
+          absolute
+          top
+          color="primary"
+      ></v-progress-linear>
 
-      <v-card-text v-else>
-        <v-form v-if="currentLtpv" ref="form"
+      <v-divider></v-divider>
+
+      <v-card-text>
+        <v-layout v-if="getMeta.loading || loading" class="align-center justify-center" fill-height>
+          <v-progress-circular
+              :size="50"
+              color="primary"
+              indeterminate
+          ></v-progress-circular>
+        </v-layout>
+        <v-form v-else-if="currentLtpv" ref="form"
                 v-model="valid" color="primary" validation>
           <v-container>
             <v-text-field
@@ -102,14 +110,11 @@
             ></v-file-input>
           </v-container>
         </v-form>
-        <div v-else class="text-center">
-          <v-progress-circular
-              :size="50"
-              color="primary"
-              indeterminate
-          ></v-progress-circular>
-        </div>
+        <p v-else>Не удалось получить данные текущей редакции</p>
       </v-card-text>
+
+      <v-divider></v-divider>
+
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" @click="close">Закрыть</v-btn>
@@ -171,6 +176,7 @@ export default {
 
   computed: {
     ...mapGetters('Ltp', ['getVersions', 'getMeta']),
+    ...mapGetters(['loading']),
 
     ltpv_id() {
       return parseInt(this.$route.params.id);

@@ -289,10 +289,10 @@
             </template>
 
             <v-list>
-              <v-list-item>
+              <v-list-item @click="requestExportDp(ltpv_id)">
                 <v-list-item-title>Экспорт ДП</v-list-item-title>
               </v-list-item>
-              <v-list-item>
+              <v-list-item @click="exportTable">
                 <v-list-item-title>Экспорт таблицы</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -330,7 +330,7 @@
           :max-height="heightScrollArea + 'px'"
       >
         <v-container fluid>
-          <v-simple-table dense>
+          <v-simple-table ref="table" dense>
             <template v-slot:default>
               <thead>
               <tr>
@@ -456,21 +456,43 @@
           </v-simple-table>
         </v-container>
       </v-sheet>
-
-      <v-footer v-if="getMkds" ref="footer" fixed>
-        <v-pagination
-            v-model="page"
-            :length="Math.ceil(getMkds.count_el / step)"
-            total-visible="10"
-            @input="inputPage"
-        ></v-pagination>
-      </v-footer>
     </v-main>
+
+    <v-footer v-if="getMkds" ref="footer" app>
+      <v-pagination
+          v-model="page"
+          :length="Math.ceil(getMkds.count_el / step)"
+          total-visible="10"
+          @input="inputPage"
+      ></v-pagination>
+      <v-spacer></v-spacer>
+      <v-btn-toggle
+          v-model.number="step"
+          color="primary"
+          tile dense group
+          mandatory
+          @change="changeStep"
+      >
+        <v-btn :value="100">
+          100
+        </v-btn>
+        <v-btn :value="500">
+          500
+        </v-btn>
+        <v-btn :value="1000">
+          1000
+        </v-btn>
+        <v-btn :value="Number.MAX_SAFE_INTEGER">
+          ALL
+        </v-btn>
+      </v-btn-toggle>
+    </v-footer>
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex'
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import {exportHtmlTable} from "@/store/_helpers/files_helpers";
 
 export default {
   mounted() {
@@ -613,9 +635,19 @@ export default {
 
 
   methods: {
-    ...mapActions('Ltpv', ['requestGetMkdInLtpV', 'requestGetStpByLtpvId']),
+    ...mapActions('Ltpv', ['requestGetMkdInLtpV', 'requestGetStpByLtpvId', 'requestExportDp']),
     ...mapActions('address', ['requestGetMunicipalities', 'requestGetAllSettlementsWithFull', 'requestGetStreets']),
     ...mapActions('catalogs', ['requestGetWkArr', 'requestGetMkdType', 'requestGetMkdAdditionalStatus']),
+    ...mapMutations(['setError']),
+
+
+    exportTable() {
+      try {
+        exportHtmlTable(this.$refs.table.$el.getElementsByTagName('table')[0]);
+      } catch (err) {
+        this.setError(err)
+      }
+    },
 
 
     /**
@@ -624,7 +656,6 @@ export default {
      *
      */
     submit() {
-      this.step = 100;
       this.offset = 0;
 
       const convertSelectProps = [
@@ -649,8 +680,6 @@ export default {
     },
     reset() {
       this.filters = {};
-
-      sessionStorage.removeItem('Ltpv_filters');
 
       this.mkd_included_stp = 2;
       this.mkd_excluded_stp = 2;
@@ -739,6 +768,11 @@ export default {
 
     // Запрос данных в случае обновления страницы
     inputPage() {
+      this.requestGetMkdInLtpV(this.getRequestBody);
+    },
+    // Запрос данных в случае изменения кол-ва элементов на странице
+    changeStep() {
+      this.offset = 0;
       this.requestGetMkdInLtpV(this.getRequestBody);
     },
 

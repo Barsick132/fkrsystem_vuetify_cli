@@ -1,4 +1,5 @@
 import Vue from "vue";
+import {downloadFile} from "@/store/_helpers/files_helpers";
 
 export default {
     namespaced: true,
@@ -8,7 +9,7 @@ export default {
             data: [],
             loading: false,
             progress: 0
-        },
+        }
     }),
     mutations: {
         setMkds(state, payload) {
@@ -34,7 +35,7 @@ export default {
             })
 
             state.stp_arr = {data, loading, progress}
-        },
+        }
     },
     actions: {
         requestGetMkdInLtpV({commit}, body) {
@@ -88,6 +89,19 @@ export default {
                 })
                 .finally(() => {
                     commit('setStpArr', {loading: false});
+                });
+        },
+        requestExportDp({commit}, ltpv_id) {
+            commit('setNotification', {value: 'Скачивание началось', color: 'info'}, {root: true});
+
+            Vue.axios.get(process.env.VUE_APP_SERVER_URL + 'api/pfd/long/export/' + ltpv_id, {
+                responseType: 'blob'
+            })
+                .then(res => {
+                    downloadFile(res);
+                })
+                .catch(err => {
+                    commit('setError', err, {root: true});
                 });
         }
     },

@@ -10,6 +10,12 @@ export default {
             loading: false,
             progress: 0
         },
+        counter_mkd_arr: {
+            dialog: false,
+            data: [],
+            loading: false,
+            progress: 0
+        },
         versions: [],
     }),
     mutations: {
@@ -26,6 +32,25 @@ export default {
         },
         setVersions(state, payload) {
             state.versions = payload;
+        },
+        setCounterMkdArr(state, {
+            dialog = state.counter_mkd_arr.dialog,
+            data = state.counter_mkd_arr.data,
+            loading = state.counter_mkd_arr.loading,
+            progress = state.counter_mkd_arr.progress
+        }) {
+            if (dialog === false && state.counter_mkd_arr.dialog) {
+                setTimeout(() => router.push('/pfd/ltp'), 250);
+            }
+
+            console.log(data);
+
+            state.counter_mkd_arr = {
+                dialog,
+                data,
+                loading,
+                progress,
+            }
         }
     },
     actions: {
@@ -34,9 +59,6 @@ export default {
                 responseType: 'blob', // important
             })
                 .then(res => {
-                    if (res.data.status)
-                        throw res.data;
-
                     downloadFile(res);
                 })
                 .catch(err => {
@@ -130,6 +152,37 @@ export default {
                 .finally(() => {
                     commit('setLoading', false, {root: true})
                 })
+        },
+        requestGetCounterMkdByFlag({commit}, body) {
+            /**
+             * body = {
+             * ltpv_id: 1, // required, numeric
+             * flag: 'ADD' // required, string (values: ADD, EXC)
+             * }
+             */
+            commit('setCounterMkdArr', {data: [], loading: true, progress: 0});
+
+            Vue.axios.post(process.env.VUE_APP_SERVER_URL + 'api/pfd/long/counter', body, {
+                onUploadProgress: ({loaded, total}) => {
+                    const uploadProgress = Math.round(loaded / total * 100)
+
+                    commit('setCounterMkdArr', {progress: uploadProgress})
+                },
+            })
+                .then(res => {
+                    res = res.data;
+
+                    if (res.status && res.status === 'OK' && res.payload)
+                        commit('setCounterMkdArr', {data: res.payload});
+                    else
+                        throw res;
+                })
+                .catch(err => {
+                    commit('setError', err, {root: true});
+                })
+                .finally(() => {
+                    commit('setCounterMkdArr', {loading: false});
+                });
         }
     },
     getters: {
@@ -138,6 +191,9 @@ export default {
         },
         getVersions(state) {
             return state.versions;
+        },
+        getCounterMkdArr(state) {
+            return state.counter_mkd_arr;
         }
     },
 }

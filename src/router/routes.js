@@ -4,10 +4,12 @@ import AuthGuard from "@/router/auth-guard"
 import Login from "@/pages/Auth/Login";
 import Home from "@/pages/Employees/Home";
 import NotFound from "@/pages/NotFound";
-import Pfd from "@/pages/Employees/Pfd/Pfd";
-import Ltp from "@/pages/Employees/Pfd/LongTermProgram/Ltp";
-import LtpUpdateMetaModal from "@/pages/Employees/Pfd/LongTermProgram/LtpUpdateMetaModal";
-import Ltpv from "@/pages/Employees/Pfd/LongTermProgram/Ltpv";
+
+const Pfd = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/Pfd");
+const Ltp = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Ltp");
+const LtpUpdateMetaModal = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/LtpUpdateMetaModal");
+const LtpCounterMkdModal = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/LtpCounterMkdModal");
+const Ltpv = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Ltpv");
 
 export const router = new VueRouter({
     routes: [
@@ -38,6 +40,12 @@ export const router = new VueRouter({
                             path: 'updateMeta/:id',
                             name: 'updateMeta',
                             component: LtpUpdateMetaModal,
+                            meta: {acs_name: ['admin', 'frp', 'spec_frp']},
+                        },
+                        {
+                            path: 'counterMkd/:id/:flag',
+                            name: 'counterMkd',
+                            component: LtpCounterMkdModal,
                             meta: {acs_name: ['admin', 'frp', 'spec_frp']},
                         }
                     ]
