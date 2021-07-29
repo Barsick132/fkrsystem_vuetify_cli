@@ -1,6 +1,6 @@
 <template>
   <v-card color="white"
-          :height="$vuetify.breakpoint.smAndDown ? 56 : 64"
+          :height="$vuetify.application.top"
           flat tile
           to="/">
     <img
@@ -12,6 +12,6 @@
 
 <script>
 export default {
-  name: "AppBarNavLogo.vue"
+  name: "AppBarNavLogo.vue",
 }
 </script>

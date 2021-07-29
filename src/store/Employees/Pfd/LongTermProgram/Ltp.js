@@ -21,7 +21,7 @@ export default {
     mutations: {
         setMeta(state, {dialog = state.meta.dialog, loading = state.meta.loading, progress = state.meta.progress}) {
             if (dialog === false && state.meta.dialog) {
-                setTimeout(() => router.push('/pfd/ltp'), 250);
+                setTimeout(() => router.push({ name: 'ltp' }), 250);
             }
 
             state.meta = {
@@ -40,7 +40,7 @@ export default {
             progress = state.counter_mkd_arr.progress
         }) {
             if (dialog === false && state.counter_mkd_arr.dialog) {
-                setTimeout(() => router.push('/pfd/ltp'), 250);
+                setTimeout(() => router.push({ name: 'ltp' }), 250);
             }
 
             console.log(data);

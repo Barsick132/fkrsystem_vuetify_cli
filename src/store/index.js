@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Pfd from "./Employees/Pfd/Pfd"
 import Ltp from "./Employees/Pfd/LongTermProgram/Ltp";
 import Ltpv from "./Employees/Pfd/LongTermProgram/Ltpv";
 import login from "./Auth/login";
@@ -12,7 +13,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     modules: {
-        Ltp, Ltpv, login,
+        Pfd, Ltp, Ltpv, login,
         user, address, catalogs,
         root
     }

@@ -179,7 +179,7 @@ export default {
     ...mapGetters(['loading']),
 
     ltpv_id() {
-      return parseInt(this.$route.params.id);
+      return parseInt(this.$route.params.ltpv_id);
     },
 
     currentLtpv() {

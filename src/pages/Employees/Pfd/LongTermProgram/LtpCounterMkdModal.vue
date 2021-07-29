@@ -90,7 +90,7 @@ export default {
     ...mapGetters('Ltp', ['getCounterMkdArr', 'getVersions']),
 
     ltpv_id() {
-      return parseInt(this.$route.params.id);
+      return parseInt(this.$route.params.ltpv_id);
     },
     flag() {
       return this.$route.params.flag;

@@ -10,23 +10,28 @@ const Ltp = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/
 const LtpUpdateMetaModal = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/LtpUpdateMetaModal");
 const LtpCounterMkdModal = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/LtpCounterMkdModal");
 const Ltpv = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Ltpv");
+const Mkd = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Mkd/Mkd.vue");
 
 export const router = new VueRouter({
     routes: [
         {
             path: '/',
-            redirect: '/home'
+            name: 'root',
+            redirect: {name: 'home'}
         },
         {
             path: '/login',
+            name: 'login',
             component: Login
         },
         {
             path: '/home',
+            name: 'home',
             component: Home,
         },
         {
             path: '/pfd',
+            name: 'pfd',
             component: Pfd,
             redirect: {path: '/pfd/ltp'},
             children: [
@@ -37,13 +42,13 @@ export const router = new VueRouter({
                     meta: {acs_name: ['admin', 'frp', 'spec_frp']},
                     children: [
                         {
-                            path: 'updateMeta/:id',
+                            path: 'updateMeta/ltpv_id:ltpv_id',
                             name: 'updateMeta',
                             component: LtpUpdateMetaModal,
                             meta: {acs_name: ['admin', 'frp', 'spec_frp']},
                         },
                         {
-                            path: 'counterMkd/:id/:flag',
+                            path: 'counterMkd/ltpv_id:ltpv_id/:flag',
                             name: 'counterMkd',
                             component: LtpCounterMkdModal,
                             meta: {acs_name: ['admin', 'frp', 'spec_frp']},
@@ -51,15 +56,22 @@ export const router = new VueRouter({
                     ]
                 },
                 {
-                    path: 'ltp/v:id',
+                    path: 'ltp/ltpv_id:ltpv_id',
                     name: 'ltpv',
                     component: Ltpv,
                     meta: {acs_name: ['admin', 'frp', 'spec_frp']},
                 },
+                {
+                    path: 'mkd/ltpv_id:ltpv_id/mkdstate_id:mkdstate_id',
+                    name: 'mkd',
+                    component: Mkd,
+                    meta: {acs_name: ['admin', 'frp', 'spec_frp']},
+                }
             ],
         },
         {
             path: '*',
+            name: 'notFound',
             component: NotFound
         }
     ],

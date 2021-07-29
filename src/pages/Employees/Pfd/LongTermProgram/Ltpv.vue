@@ -261,16 +261,16 @@
       </v-card>
     </v-navigation-drawer>
 
-    <v-main ref="main">
+    <v-main app ref="main">
       <Notifications></Notifications>
 
       <v-toolbar ref="toolbar"
                  dense>
-        <v-toolbar-items>
-          <v-btn icon @click="$router.push('/pfd/ltp')">
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
-        </v-toolbar-items>
+<!--        <v-toolbar-items>-->
+<!--          <v-btn icon @click="$router.push({ name: 'ltp' })">-->
+<!--            <v-icon>mdi-arrow-left</v-icon>-->
+<!--          </v-btn>-->
+<!--        </v-toolbar-items>-->
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn icon @click="showFilter = !showFilter">
@@ -369,7 +369,7 @@
                       <td v-if="stp_key===0" :rowspan="getRowspan(mkd)">{{ mkd.mkd_code }}</td>
                       <td v-if="stp_key===0" :rowspan="getRowspan(mkd)">{{ mkd.mun_name }}</td>
                       <td v-if="stp_key===0" :rowspan="getRowspan(mkd)">
-                        <router-link :to="'/mkd/' + mkd.mkdstate_id">{{ mkd.mkd_address }}</router-link>
+                        <router-link :to="{name: 'mkd', params: {ltpv_id, mkdstate_id: mkd.mkdstate_id}}">{{ mkd.mkd_address }}</router-link>
                       </td>
                       <td>{{ stp.stp_year_start + ' - ' + stp.stp_year_end }}</td>
                       <td class="v-chip--clickable"
@@ -406,7 +406,7 @@
                       <td v-if="improg_key===0 && stp_key===0" :rowspan="getRowspan(mkd)">{{ mkd.mkd_code }}</td>
                       <td v-if="improg_key===0 && stp_key===0" :rowspan="getRowspan(mkd)">{{ mkd.mun_name }}</td>
                       <td v-if="improg_key===0 && stp_key===0" :rowspan="getRowspan(mkd)">
-                        <router-link :to="'/mkd/' + mkd.mkdstate_id">{{ mkd.mkd_address }}</router-link>
+                        <router-link :to="{name: 'mkd', params: {ltpv_id, mkdstate_id: mkd.mkdstate_id}}">{{ mkd.mkd_address }}</router-link>
                       </td>
                       <td v-if="improg_key===0" :rowspan="stp.wk_arr.length">
                         {{ stp.stp_year_start + ' - ' + stp.stp_year_end }}
@@ -596,7 +596,7 @@ export default {
 
     // Получает ltpv_id из параметров адресной строки
     ltpv_id() {
-      return parseInt(this.$route.params.id);
+      return parseInt(this.$route.params.ltpv_id);
     },
 
 

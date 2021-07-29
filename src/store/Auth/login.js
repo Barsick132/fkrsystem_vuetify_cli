@@ -40,7 +40,7 @@ export default {
 
             Vue.cookie.delete('refresh_token');
 
-            router.push('/login');
+            router.push({ name: 'login' });
         }
     },
     actions: {
@@ -78,7 +78,7 @@ export default {
                     commit('setAccesses', res.data);
 
                     // Перебрасываем пользователя на главную страницу
-                    router.push('/home');
+                    router.push({ name: 'home' });
                 })
                 .catch(err => {
                     commit('setError', err, {root: true})

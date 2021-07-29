@@ -41,11 +41,11 @@
           <tr v-else v-for="(ltpv, i) in getVersions" :key="i">
             <td>{{ ltpv.ltpv_id }}</td>
             <td>
-              <router-link :to="'/pfd/ltp/v' + ltpv.ltpv_id">{{ ltpv.ltpv_name }}</router-link>
+              <router-link :to="{name: 'ltpv', params: {ltpv_id: ltpv.ltpv_id}}">{{ ltpv.ltpv_name }}</router-link>
             </td>
             <td>{{ ltpv.count_mkd }}
-              <router-link class="success--text" :to="{name: 'counterMkd', params: {id: ltpv.ltpv_id, flag: 'ADD'}}">(+{{ ltpv.count_mkd_add }})</router-link>
-              <router-link class="error--text" :to="{name: 'counterMkd', params: {id: ltpv.ltpv_id, flag: 'EXC'}}">(-{{ ltpv.count_mkd_del }})</router-link>
+              <router-link class="success--text" :to="{name: 'counterMkd', params: {ltpv_id: ltpv.ltpv_id, flag: 'ADD'}}">(+{{ ltpv.count_mkd_add }})</router-link>
+              <router-link class="error--text" :to="{name: 'counterMkd', params: {ltpv_id: ltpv.ltpv_id, flag: 'EXC'}}">(-{{ ltpv.count_mkd_del }})</router-link>
             </td>
             <td>{{ ltpv.ltpv_period }}</td>
             <td width="750px">
@@ -65,7 +65,7 @@
               <v-btn class="ml-md-3"
                      color="warning"
                      text fab light x-small
-                     :to="{name: 'updateMeta', params: {id: ltpv.ltpv_id}}">
+                     :to="{name: 'updateMeta', params: {ltpv_id: ltpv.ltpv_id}}">
                 <v-icon dark>mdi-pencil</v-icon>
               </v-btn>
             </td>

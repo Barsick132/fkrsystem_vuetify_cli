@@ -149,7 +149,7 @@ export default {
           imgSrc: this.$root.images.PfdDprt,
           totle: 'Отдел формирования программ',
           description: 'Программы капремонта и информация по МКД',
-          to: '/pfd/ltp'
+          to: { name: 'ltp' }
         },
       ],
       account_menu: [
