@@ -2,9 +2,9 @@
   <v-main>
     <Notifications></Notifications>
 
-    <v-layout class="d-flex align-center justify-center" fill-height>
+    <v-layout align-center justify-center fill-height>
       <v-form ref="form"
-              class="mx-auto col-sm-8 col-md-6 col-lg-5 col-xl-4"
+              class="mx-auto col-sm-8 col-md-6 col-lg-5 col-xl-3"
               v-model="valid"
               validation
               @submit.prevent="submit">
@@ -44,14 +44,21 @@
                 :rules="passwordRules"
                 @click:append="showPassword = !showPassword"
             ></v-text-field>
+            <v-layout class="mx-8" align-end row>
+              <v-checkbox
+                  v-model="rememberMe"
+                  label="Запомнить меня"
+                  hide-details
+              ></v-checkbox>
+            </v-layout>
           </v-card-text>
           <v-card-actions>
-            <v-spacer></v-spacer>
             <v-btn
                 type="submit"
                 color="primary"
                 :disabled="!valid || loading"
                 :loading="loading"
+                block
             >Войти
             </v-btn>
           </v-card-actions>
@@ -69,6 +76,7 @@ export default {
   data() {
     return {
       valid: false,
+      rememberMe: false,
       username: '',
       password: '',
       showPassword: false,
@@ -88,7 +96,7 @@ export default {
 
 
   methods: {
-    ...mapActions('login', ['requestLogin']),
+    ...mapActions('auth', ['requestLogin']),
 
     submit() {
       if (this.$refs.form.validate()) {
@@ -99,6 +107,7 @@ export default {
           username: this.username,
           password: this.password,
           scope: '*',
+          remember_me: this.rememberMe
         };
 
         this.requestLogin(auth_data);

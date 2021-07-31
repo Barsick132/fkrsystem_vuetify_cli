@@ -43,8 +43,6 @@ export default {
                 setTimeout(() => router.push({ name: 'ltp' }), 250);
             }
 
-            console.log(data);
-
             state.counter_mkd_arr = {
                 dialog,
                 data,

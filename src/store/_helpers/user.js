@@ -1,5 +1,67 @@
 import Vue from 'vue'
 
+export class User {
+    static accessToken = {
+        get() {
+            return localStorage.getItem('accessToken');
+        },
+        set(access_token) {
+            return localStorage.setItem('accessToken', access_token);
+        },
+        remove() {
+            return localStorage.removeItem('accessToken');
+        }
+    }
+    static tokenType = {
+        get() {
+            return localStorage.getItem('tokenType');
+        },
+        set(token_type) {
+            return localStorage.setItem('tokenType', token_type);
+        },
+        remove() {
+            return localStorage.removeItem('tokenType');
+        }
+    }
+    static refreshToken = {
+        get() {
+            return localStorage.getItem('refreshToken');
+        },
+        set(refresh_token) {
+            return localStorage.setItem('refreshToken', refresh_token);
+        },
+        remove() {
+            return localStorage.removeItem('refreshToken');
+        }
+    }
+    static expiresIn = {
+        get() {
+            return JSON.parse(localStorage.getItem('expiresIn'));
+        },
+        set(expires_in) {
+            return localStorage.setItem('expiresIn', JSON.stringify(new Date(new Date().getTime() + expires_in * 1000)));
+        },
+        remove() {
+            return localStorage.removeItem('expiresIn');
+        }
+    }
+
+    static saveAuthData({access_token, token_type, expires_in, refresh_token, remember_me = null}) {
+        this.accessToken.set(access_token);
+        this.tokenType.set(token_type);
+        this.expiresIn.set(expires_in);
+        if (remember_me === true || (remember_me === null && this.refreshToken.get()))
+            this.refreshToken.set(refresh_token);
+    }
+
+    static removeAuthData() {
+        this.accessToken.remove();
+        this.tokenType.remove();
+        this.refreshToken.remove();
+        this.expiresIn.remove();
+    }
+}
+
 export default {
     namespaced: true,
     state: () => ({

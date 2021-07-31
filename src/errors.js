@@ -82,4 +82,6 @@ window.ErrorsMes = {
     ERROR_RECEIVING_OLD_RBC: 'Ошибка получения СТАРОГО отчета стройконтроля',
     ERROR_RECEIVING_RCO: 'Ошибка получения отчета подрядчика',
     ERROR_RECEIVING_OLD_RCO: 'Ошибка получения СТАРОГО отчета подрядчика',
+
+    NON_AUTHORIZED: 'Вы не авторизованы'
 }

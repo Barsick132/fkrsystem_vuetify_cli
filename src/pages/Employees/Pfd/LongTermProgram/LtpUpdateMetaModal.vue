@@ -28,7 +28,7 @@
           ></v-progress-circular>
         </v-layout>
         <v-form v-else-if="currentLtpv" ref="form"
-                v-model="valid" color="primary" validation>
+                v-model="valid" color="primary" validation @submit.prevent="submit">
           <v-container>
             <v-text-field
                 v-if="currentLtpv.ltpv_name !== 'Текущая редакция'"
@@ -92,7 +92,7 @@
             <v-file-input
                 v-model="addFiles"
                 truncate-length="15"
-                label="Выписка из ЕГРН (обязательно)"
+                label="Выберите файлы для добавления"
                 placeholder="Выберите файлы"
                 prepend-icon="mdi-paperclip"
                 accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document,

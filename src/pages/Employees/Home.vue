@@ -187,7 +187,7 @@ export default {
 
   methods: {
     ...mapActions('user', ['requestGetUser']),
-    ...mapMutations('login', ['logout'])
+    ...mapMutations('auth', ['logout'])
   }
 }
 </script>

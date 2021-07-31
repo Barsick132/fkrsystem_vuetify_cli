@@ -1,37 +1,21 @@
 import Vue from "vue"
 import App from "./App.vue"
-import VueRouter from "vue-router";
 import {router} from "./router/routes"
 import vuetify from "./vuetify"
 import store from "./store"
-import axios from "axios"
-import VueAxios from "vue-axios";
-import VueCookie from "vue-cookie"
 import images from "./images"
 
-import {filterBeautifulDtLocalFromISO, filterDtLocalFromISO, filterMoney} from '@/store/_helpers/date_helpers'
-
-import Notifications from "@/components/Notifications";
-import AppBarNavLogo from "@/components/AppBarNavLogo";
-
+// Загрузчик
+import './bootstrap'
+// Подключение компонентов глобально
+import './components'
+// Подключение фильтров глобально
+import './filters'
+// Перечень ошибок
 import './errors'
+// Кастомные стили
 import "./styles/main.sass"
 
-// Плагин для маршрутизации
-Vue.use(VueRouter)
-// Плагин для построения запросов
-Vue.use(VueAxios, axios)
-// Плагин для работы с cookies
-Vue.use(VueCookie)
-
-Vue.config.productionTip = false
-
-Vue.component('Notifications', Notifications);
-Vue.component('AppBarNavLogo', AppBarNavLogo);
-
-Vue.filter('filterMoney', filterMoney);
-Vue.filter('filterDtLocalFromISO', filterDtLocalFromISO);
-Vue.filter('filterBeautifulDtLocalFromISO', filterBeautifulDtLocalFromISO);
 
 new Vue({
     el: '#app',

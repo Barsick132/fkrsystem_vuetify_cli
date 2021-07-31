@@ -11,6 +11,9 @@ const LtpUpdateMetaModal = () => import(/* webpackChunkName: "group-pfd" */ "@/p
 const LtpCounterMkdModal = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/LtpCounterMkdModal");
 const Ltpv = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Ltpv");
 const Mkd = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Mkd/Mkd.vue");
+const MkdParams = () => import(/* webpackChunkName: "group-pfd" */ "@/pages/Employees/Pfd/LongTermProgram/Mkd/MkdParams.vue");
+
+
 
 export const router = new VueRouter({
     routes: [
@@ -33,7 +36,7 @@ export const router = new VueRouter({
             path: '/pfd',
             name: 'pfd',
             component: Pfd,
-            redirect: {path: '/pfd/ltp'},
+            redirect: {name: 'ltp'},
             children: [
                 {
                     path: 'ltp',
@@ -65,7 +68,15 @@ export const router = new VueRouter({
                     path: 'mkd/ltpv_id:ltpv_id/mkdstate_id:mkdstate_id',
                     name: 'mkd',
                     component: Mkd,
-                    meta: {acs_name: ['admin', 'frp', 'spec_frp']},
+                    redirect: {name: 'mkdParams'},
+                    children: [
+                        {
+                            path: 'mkdParams',
+                            name: 'mkdParams',
+                            component: MkdParams,
+                            meta: {acs_name: ['admin', 'frp', 'spec_frp']},
+                        }
+                    ]
                 }
             ],
         },

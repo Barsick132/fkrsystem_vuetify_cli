@@ -734,32 +734,6 @@ export default {
       this.innerHeight = window.innerHeight;
 
       this.$nextTick(() => {
-        // function calcHeightScrollArea(application) {
-        //   if(typeof application.top === 'number') {
-        //     console.log('top', application.top);
-        //     heightScrollArea -= application.top;
-        //   }
-        //   else {
-        //     console.log('top_obj', application.top[Object.keys(application.top)[0]]);
-        //     heightScrollArea -= application.top[Object.keys(application.top)[0]];
-        //   }
-        //   if(typeof application.footer === 'number') {
-        //     console.log('footer', application.footer);
-        //     heightScrollArea -= application.footer;
-        //   }
-        //   else {
-        //     console.log('footer_obj', application.footer[Object.keys(application.footer)[0]]);
-        //     heightScrollArea -= application.footer[Object.keys(application.footer)[0]];
-        //   }
-        //
-        //   if (application.application)
-        //     calcHeightScrollArea(application.application);
-        // }
-        //
-        // let heightScrollArea = this.innerHeight;
-        // calcHeightScrollArea(this.$vuetify.application);
-        // this.heightScrollArea = heightScrollArea;
-
         this.heightScrollArea = this.innerHeight;
         this.heightScrollArea -= (this.$refs.toolbar.$el.clientHeight + (this.$refs.footer ? this.$refs.footer.$el.clientHeight : this.$vuetify.application.footer) + this.$vuetify.application.top);
       });

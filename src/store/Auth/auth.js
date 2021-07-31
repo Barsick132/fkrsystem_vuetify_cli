@@ -1,46 +1,25 @@
 import Vue from "vue";
 import {router} from '@/router/routes'
+import {User} from "@/store/_helpers/user";
 
 export default {
     namespaced: true,
     state: () => ({
-        access_token: '',
-        accesses: []
+        accesses: null
     }),
     mutations: {
         setAccesses(state, res) {
             if (res.status === "OK" && res.payload) {
                 state.accesses = res.payload.accesses;
-            }
-            else {
+            } else {
                 throw res;
             }
         },
-        setTokens(state, payload) {
-            // Сохраняем accessToken в state для упрощения доступа
-            state.access_token = payload.token_type + ' ' + payload.access_token;
-
-            // Добавляем заголовки по умолчанию
-            Vue.axios.defaults.headers.Authorization = state.access_token;
-            Vue.axios.defaults.headers['Content-Type'] = 'application/json';
-
-            // Сохраняем refresh_token в cookie
-            Vue.cookie.set('refresh_token', payload.refresh_token, {
-                'max-age': payload.expires_in,
-                'secure': true,
-                'SameSite': 'strict'
-            });
-        },
         logout(state) {
-            state.access_token = '';
-            state.accesses = [];
+            User.removeAuthData();
+            state.accesses = null;
 
-            delete Vue.axios.defaults.headers.Authorization;
-            delete Vue.axios.defaults.headers['Content-Type'];
-
-            Vue.cookie.delete('refresh_token');
-
-            router.push({ name: 'login' });
+            router.push({name: 'login'});
         }
     },
     actions: {
@@ -68,17 +47,14 @@ export default {
                         commit('setNotification', {value: 'Не верный логин или пароль', color: 'error'}, {root: true})
                         return;
                     }
-                    // Сохраняем access_token в root, а refresh_token в cookies
-                    commit('setTokens', res.data);
+                    // Сохраняем данные авторизации в localStorage
+                    User.saveAuthData({...res.data, remember_me: auth_data.remember_me});
                     // Запрашиваем доступы для дальнейшей работы
                     return dispatch('requestGetAccesses');
                 })
-                .then(res => {
-                    // Сохраняем доступы
-                    commit('setAccesses', res.data);
-
+                .then(() => {
                     // Перебрасываем пользователя на главную страницу
-                    router.push({ name: 'home' });
+                    router.push({name: 'home'});
                 })
                 .catch(err => {
                     commit('setError', err, {root: true})
@@ -87,13 +63,10 @@ export default {
                     commit('setLoading', false, {root: true})
                 })
         },
-        requestGetAccesses() {
-            return Vue.axios.get(process.env.VUE_APP_SERVER_URL + 'api/getAccesses');
-        },
         requestRefreshToken({commit, dispatch}) {
             let auth_data = {
                 grant_type: 'refresh_token',
-                refresh_token: Vue.cookie.get('refresh_token'),
+                refresh_token: User.refreshToken.get(),
                 client_id: process.env.VUE_APP_CLIENT_ID,
                 client_secret: process.env.VUE_APP_CLIENT_SECRET,
                 scope: '*',
@@ -104,32 +77,45 @@ export default {
                     reject();
                 }
 
-                Vue.axios.post(process.env.VUE_APP_SERVER_URL + 'oauth/token', auth_data)
+                Vue.axios.post(process.env.VUE_APP_SERVER_URL + 'oauth/token', auth_data, {
+                    validateStatus(status) {
+                        return status === 401 || status === 200;
+                    }
+                })
                     .then(res => {
-                        // Сохраняем access_token в root, а refresh_token в cookies
-                        commit('setTokens', res.data);
+                        // Так как в случае невалидности refresh_token возникает ошибка 401
+                        // необходимо обработать ее в методе, чтобы не возникало рекурсии в интерсепторе
+                        if (res.status === 401)
+                            throw res;
+
+                        // Сохраняем данные авторизации в localStorage
+                        User.saveAuthData(res.data);
                         // Запрашиваем доступы для дальнейшей работы
                         return dispatch('requestGetAccesses');
                     })
-                    .then(res => {
-                        // Сохраняем доступы
-                        commit('setAccesses', res.data);
+                    .then(() => {
                         resolve();
                     })
                     .catch(() => {
-                        commit('setNotification', {value: 'Не удалось обновить токен доступа', color: 'error'}, {root: true})
                         commit('logout')
                         reject();
                     });
             })
-        }
+        },
+        requestGetAccesses({commit}) {
+            return Vue.axios.get(process.env.VUE_APP_SERVER_URL + 'api/getAccesses')
+                .then(res => {
+                    // Сохраняем доступы
+                    commit('setAccesses', res.data);
+                })
+                .catch((err) => {
+                    throw err;
+                })
+        },
     },
     getters: {
         getAccesses(state) {
             return state.accesses;
-        },
-        getAccessToken(state) {
-            return state.access_token;
         },
     }
 }
