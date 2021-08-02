@@ -11,8 +11,13 @@ export default {
         setLoading(state, payload) {
             state.loading = payload;
         },
-        setError(state, payload) {
-            console.error(payload);
+        /**
+         * @param state - содержимое ошибки;
+         * @param payload - содержимое ошибки, м.б. объектом, содержащим статус;
+         * @param method_name - наименование метода из, которого вызывается функция.
+         */
+        setError(state, [payload, method_name = '']) {
+            console.error('Method: ' + method_name + '\n\t', payload);
             if (payload.status && window.ErrorsMes[payload.status])
                 this.commit('setNotification', {value: window.ErrorsMes[payload.status], color: 'error'}, {root: true});
             else

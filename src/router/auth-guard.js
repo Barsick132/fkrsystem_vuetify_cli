@@ -31,7 +31,7 @@ export default async (to, from, next) => {
             })) {
                 next();
             } else {
-                store.commit('setError', {status: 'NOT_ACCESS'}, {root: true})
+                store.commit('setError', [{status: 'NOT_ACCESS'}, 'auth_guard'], {root: true})
                 next(from);
             }
         } else

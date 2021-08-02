@@ -3,6 +3,8 @@
     <MkdNavigationDrawer></MkdNavigationDrawer>
 
     <v-main app>
+      <Notifications></Notifications>
+
       <v-toolbar ref="toolbar"
                  class="hidden-sm-and-down"
                  dense>

@@ -645,7 +645,7 @@ export default {
       try {
         exportHtmlTable(this.$refs.table.$el.getElementsByTagName('table')[0]);
       } catch (err) {
-        this.setError(err)
+        this.setError([err, 'Ltpv.vue exportTable()'])
       }
     },
 

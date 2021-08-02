@@ -60,7 +60,7 @@ export default {
                     }
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true})
+                    commit('setError', [err, 'Ltpv.js requestGetMkdInLtpV()'], {root: true})
                 })
                 .finally(() => {
                     commit('setLoading', false, {root: true})
@@ -85,7 +85,7 @@ export default {
                         throw res;
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'Ltpv.js requestGetStpByLtpvId()'], {root: true});
                 })
                 .finally(() => {
                     commit('setStpArr', {loading: false});
@@ -101,7 +101,7 @@ export default {
                     downloadFile(res);
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'Ltpv.js requestExportDp()'], {root: true});
                 });
         }
     },

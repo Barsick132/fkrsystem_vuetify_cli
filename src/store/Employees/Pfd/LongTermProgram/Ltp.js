@@ -60,7 +60,7 @@ export default {
                     downloadFile(res);
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true})
+                    commit('setError', [err, 'Ltp.js requestDownloadFile()'], {root: true})
                 })
         },
         async requestDelFile(commit, del_file_arr) {
@@ -113,7 +113,7 @@ export default {
                         commit('setMeta', {dialog: false})
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'Ltp.js requestUpdateMeta()'], {root: true});
                 })
                 .finally(() => {
                     commit('setMeta', {loading: false});
@@ -145,7 +145,7 @@ export default {
                     }
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true})
+                    commit('setError', [err, 'Ltp.js requestGetVersions()'], {root: true})
                 })
                 .finally(() => {
                     commit('setLoading', false, {root: true})
@@ -176,7 +176,7 @@ export default {
                         throw res;
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'Ltp.js requestGetCounterMkdByFlag()'], {root: true});
                 })
                 .finally(() => {
                     commit('setCounterMkdArr', {loading: false});

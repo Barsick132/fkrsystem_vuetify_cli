@@ -104,7 +104,7 @@ export default {
                     commit('setUser', res.data);
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true})
+                    commit('setError', [err, 'user.js requestGetUser()'], {root: true})
                 })
                 .finally(() => {
                     commit('setUserLoading', false);

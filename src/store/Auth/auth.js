@@ -57,7 +57,7 @@ export default {
                     router.push({name: 'home'});
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true})
+                    commit('setError', [err, 'auth.js requestLogin()'], {root: true})
                 })
                 .finally(() => {
                     commit('setLoading', false, {root: true})

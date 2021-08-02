@@ -62,7 +62,7 @@ export default {
                         throw res;
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'catalogs.js requestGetWkArr()'], {root: true});
                 })
                 .finally(() => {
                     commit('setWkArr', {loading: false});
@@ -87,7 +87,7 @@ export default {
                         throw res;
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'catalogs.js requestGetMkdType()'], {root: true});
                 })
                 .finally(() => {
                     commit('setMkdTypeArr', {loading: false});
@@ -112,7 +112,7 @@ export default {
                         throw res;
                 })
                 .catch(err => {
-                    commit('setError', err, {root: true});
+                    commit('setError', [err, 'catalogs.js requestGetMkdAdditionalStatus()'], {root: true});
                 })
                 .finally(() => {
                     commit('setMasArr', {loading: false});
